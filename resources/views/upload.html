@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Ảnh</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
+
+      .section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .section h2 {
+        color: #555;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        border-bottom: 2px solid #4caf50;
+        padding-bottom: 5px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+        font-weight: bold;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      input[type="file"] {
+        display: block;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      .preview {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .preview img {
+        max-width: 150px;
+        max-height: 150px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .result {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 4px;
+        display: none;
+      }
+
+      .result.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .result.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 10px;
+        color: #666;
+      }
+
+      .info {
+        background-color: #e7f3ff;
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
+        color: #004085;
+        font-size: 14px;
+      }
+
+      .login-section {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+      }
+
+      .avatar-preview {
+        text-align: center;
+        margin: 15px 0;
+      }
+
+      .avatar-preview img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 3px solid #4caf50;
+        object-fit: cover;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hệ Thống Upload Ảnh</h1>
+
+      <!-- Login Section -->
+      <div class="section login-section">
+        <h2>Đăng Nhập</h2>
+        <div class="form-group">
+          <label>Username:</label>
+          <input type="text" id="loginUsername" placeholder="Nhập username" />
+        </div>
+        <div class="form-group">
+          <label>Password:</label>
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Nhập password"
+          />
+        </div>
+        <button id="loginBtn">Đăng Nhập</button>
+        <div class="result" id="loginResult"></div>
+        <div class="info" id="loginInfo" style="display: none">
+          <strong>Đã đăng nhập:</strong> <span id="currentUser"></span>
+        </div>
+      </div>
+
+      <!-- Avatar Upload Section -->
+      <div class="section" id="avatarSection" style="display: none">
+        <h2>Upload Avatar</h2>
+        <div class="avatar-preview" id="avatarPreview" style="display: none">
+          <p>Avatar hiện tại:</p>
+          <img id="currentAvatar" src="" alt="Avatar" />
+        </div>
+        <div class="form-group">
+          <label>Chọn ảnh avatar:</label>
+          <input type="file" id="avatarFile" accept="image/*" />
+        </div>
+        <button id="uploadAvatarBtn" disabled>Upload Avatar</button>
+        <div class="loading" id="avatarLoading">Đang upload...</div>
+        <div class="result" id="avatarResult"></div>
+      </div>
+
+      <div class="grid">
+        <!-- Single Upload -->
+        <div class="section">
+          <h2>Upload 1 Ảnh</h2>
+          <div class="form-group">
+            <label>Chọn ảnh:</label>
+            <input type="file" id="singleFile" accept="image/*" />
+          </div>
+          <div class="preview" id="singlePreview"></div>
+          <button id="uploadSingleBtn" disabled>Upload</button>
+          <div class="loading" id="singleLoading">Đang upload...</div>
+          <div class="result" id="singleResult"></div>
+        </div>
+
+        <!-- Multiple Upload -->
+        <div class="section">
+          <h2>Upload Nhiều Ảnh</h2>
+          <div class="form-group">
+            <label>Chọn nhiều ảnh:</label>
+            <input type="file" id="multiFiles" accept="image/*" multiple />
+          </div>
+          <div class="preview" id="multiPreview"></div>
+          <button id="uploadMultiBtn" disabled>Upload Tất Cả</button>
+          <div class="loading" id="multiLoading">Đang upload...</div>
+          <div class="result" id="multiResult"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:3000";
+      let authToken = "";
+      let currentUserId = "";
+
+      // Login
+      document
+        .getElementById("loginBtn")
+        .addEventListener("click", async () => {
+          const username = document.getElementById("loginUsername").value;
+          const password = document.getElementById("loginPassword").value;
+
+          if (!username || !password) {
+            showResult(
+              "loginResult",
+              "error",
+              "Vui lòng nhập đầy đủ thông tin"
+            );
+            return;
+          }
+
+          try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              authToken = data.message;
+              showResult("loginResult", "success", "Đăng nhập thành công!");
+
+              // Get user info
+              await getUserInfo();
+            } else {
+              showResult(
+                "loginResult",
+                "error",
+                data.message || "Đăng nhập thất bại"
+              );
+            }
+          } catch (error) {
+            showResult("loginResult", "error", "Lỗi: " + error.message);
+          }
+        });
+
+      async function getUserInfo() {
+        try {
+          const response = await fetch(`${API_URL}/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            currentUserId = data.message._id;
+            document.getElementById("loginInfo").style.display = "block";
+            document.getElementById("currentUser").textContent =
+              data.message.username;
+            document.getElementById("avatarSection").style.display = "block";
+
+            // Show current avatar if exists
+            if (data.message.avatarURL) {
+              document.getElementById("avatarPreview").style.display = "block";
+              document.getElementById("currentAvatar").src =
+                data.message.avatarURL;
+            }
+          }
+        } catch (error) {
+          console.error("Get user info error:", error);
+        }
+      }
+
+      // Avatar Upload
+      document.getElementById("avatarFile").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          document.getElementById("uploadAvatarBtn").disabled = false;
+
+          // Preview
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            document.getElementById("avatarPreview").style.display = "block";
+            document.getElementById("currentAvatar").src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      document
+        .getElementById("uploadAvatarBtn")
+        .addEventListener("click", async () => {
+          const file = document.getElementById("avatarFile").files[0];
+          if (!file || !authToken || !currentUserId) return;
+
+          const formData = new FormData();
+          formData.append("avatar", file);
+
+          document.getElementById("uploadAvatarBtn").disabled = true;
+          document.getElementById("avatarLoading").style.display = "block";
+          document.getElementById("avatarResult").style.display = "none";
+
+          try {
+            const response = await fetch(
+              `${API_URL}/users/${currentUserId}/avatar`,
+              {
+                method: "PUT",
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                },
+                body: formData,
+              }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+              showResult(
+                "avatarResult",
+                "success",
+                `Upload thành công!\nURL: ${data.message.avatarURL}`
+              );
+            } else {
+              showResult(
+                "avatarResult",
+                "error",
+                data.message || "Upload thất bại"
+              );
+            }
+          } catch (error) {
+            showResult("avatarResult", "error", "Lỗi: " + error.message);
+          } finally {
+            document.getElementById("avatarLoading").style.display = "none";
+            document.getElementById("uploadAvatarBtn").disabled = false;
+          }
+        });
+
+      // Single Upload
+      document.getElementById("singleFile").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          document.getElementById("uploadSingleBtn").disabled = false;
+          previewImages([file], "singlePreview");
+        }
+      });
+
+      document
+        .getElementById("uploadSingleBtn")
+        .addEventListener("click", async () => {
+          const file = document.getElementById("singleFile").files[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("image", file);
+
+          document.getElementById("uploadSingleBtn").disabled = true;
+          document.getElementById("singleLoading").style.display = "block";
+          document.getElementById("singleResult").style.display = "none";
+
+          try {
+            const response = await fetch(`${API_URL}/files/uploads`, {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              showResult(
+                "singleResult",
+                "success",
+                `Upload thành công!\nURL: ${data.message}`
+              );
+            } else {
+              showResult("singleResult", "error", "Upload thất bại");
+            }
+          } catch (error) {
+            showResult("singleResult", "error", "Lỗi: " + error.message);
+          } finally {
+            document.getElementById("singleLoading").style.display = "none";
+            document.getElementById("uploadSingleBtn").disabled = false;
+          }
+        });
+
+      // Multiple Upload
+      document.getElementById("multiFiles").addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+          document.getElementById("uploadMultiBtn").disabled = false;
+          previewImages(files, "multiPreview");
+        }
+      });
+
+      document
+        .getElementById("uploadMultiBtn")
+        .addEventListener("click", async () => {
+          const files = document.getElementById("multiFiles").files;
+          if (files.length === 0) return;
+
+          const formData = new FormData();
+          Array.from(files).forEach((file) => {
+            formData.append("image", file);
+          });
+
+          document.getElementById("uploadMultiBtn").disabled = true;
+          document.getElementById("multiLoading").style.display = "block";
+          document.getElementById("multiResult").style.display = "none";
+
+          try {
+            const response = await fetch(`${API_URL}/files/uploadMulti`, {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              const urls = data.message.join("\n");
+              showResult(
+                "multiResult",
+                "success",
+                `Upload ${data.message.length} ảnh thành công!\n${urls}`
+              );
+            } else {
+              showResult("multiResult", "error", "Upload thất bại");
+            }
+          } catch (error) {
+            showResult("multiResult", "error", "Lỗi: " + error.message);
+          } finally {
+            document.getElementById("multiLoading").style.display = "none";
+            document.getElementById("uploadMultiBtn").disabled = false;
+          }
+        });
+
+      function previewImages(files, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        Array.from(files).forEach((file) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            container.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function showResult(elementId, type, message) {
+        const element = document.getElementById(elementId);
+        element.className = `result ${type}`;
+        element.textContent = message;
+        element.style.display = "block";
+      }
+    </script>
+  </body>
+</html>
