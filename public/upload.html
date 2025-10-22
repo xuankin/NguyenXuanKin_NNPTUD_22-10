@@ -2,180 +2,243 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <title>Upload Avatar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Nhiều Ảnh</title>
     <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
-        font-family: Arial;
-        margin: 40px;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #f4f7fa;
+        padding: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
       }
-      #preview {
-        width: 150px;
-        height: 150px;
-        border: 2px dashed #999;
-        border-radius: 50%;
+
+      .container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+      }
+
+      h2 {
+        color: #333;
+        text-align: center;
         margin-bottom: 20px;
-        object-fit: cover;
+        font-size: 24px;
       }
+
+      h3 {
+        color: #555;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+
       input,
       button {
         display: block;
+        width: 100%;
+        padding: 12px;
         margin-bottom: 15px;
-        padding: 8px;
         font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        transition: all 0.3s ease;
+      }
+
+      input:focus,
+      button:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      #previewContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .preview {
+        width: 100px;
+        height: 100px;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        object-fit: cover;
+        transition: transform 0.2s ease;
+      }
+
+      .preview:hover {
+        transform: scale(1.05);
+      }
+
+      #status {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      #status a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      #status a:hover {
+        text-decoration: underline;
+      }
+
+      #uploadSection {
+        display: none;
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px;
+        }
+
+        .preview {
+          width: 80px;
+          height: 80px;
+        }
       }
     </style>
   </head>
   <body>
-    <h2>Đăng nhập để Upload Avatar</h2>
+    <div class="container">
+      <h2>Đăng nhập để Upload Nhiều Ảnh</h2>
 
-    <!DOCTYPE html>
+      <div id="loginForm">
+        <input type="text" id="username" placeholder="Tên đăng nhập" required />
+        <input type="password" id="password" placeholder="Mật khẩu" required />
+        <button id="loginBtn">Đăng nhập</button>
+      </div>
 
-    <html lang="vi">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Upload Nhiều Ảnh</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
+      <div id="uploadSection">
+        <h3>Upload Nhiều Ảnh</h3>
+        <input type="file" id="imageInput" accept="image/*" multiple />
+        <div id="previewContainer"></div>
+        <button id="uploadBtn">Upload</button>
+        <p id="status"></p>
+      </div>
+    </div>
+
+    <script>
+      let authToken = "";
+
+      // Đăng nhập
+      document
+        .getElementById("loginBtn")
+        .addEventListener("click", async () => {
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value.trim();
+
+          if (!username || !password) {
+            alert("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!");
+            return;
           }
-          h2,
-          h3 {
-            color: #333;
-          }
-          #previewContainer {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-            margin-bottom: 20px;
-          }
-          .preview {
-            width: 120px;
-            height: 120px;
-            border: 2px dashed #aaa;
-            border-radius: 10px;
-            object-fit: cover;
-          }
-          input,
-          button {
-            display: block;
-            margin-bottom: 15px;
-            padding: 8px;
-            font-size: 16px;
-          }
-        </style>
-      </head>
-      <body>
-        <h2>Đăng nhập để Upload Nhiều Ảnh</h2>
 
-        ```
-        <div id="loginForm">
-          <input type="text" id="username" placeholder="Username" />
-          <input type="password" id="password" placeholder="Password" />
-          <button id="loginBtn">Đăng nhập</button>
-        </div>
-
-        <div id="uploadSection" style="display: none">
-          <h3>Upload Nhiều Ảnh</h3>
-          <input type="file" id="imageInput" accept="image/*" multiple />
-          <div id="previewContainer"></div>
-          <button id="uploadBtn">Upload</button>
-          <p id="status"></p>
-        </div>
-
-        <script>
-          let authToken = "";
-
-          // ==== ĐĂNG NHẬP ====
-          document
-            .getElementById("loginBtn")
-            .addEventListener("click", async () => {
-              const username = document.getElementById("username").value.trim();
-              const password = document.getElementById("password").value.trim();
-
-              const res = await fetch("http://localhost:3000/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
-              });
-
-              const data = await res.json();
-              if (data.success) {
-                authToken = data.data.startsWith("Bearer")
-                  ? data.data
-                  : "Bearer " + data.data;
-
-                alert("Đăng nhập thành công!");
-                document.getElementById("loginForm").style.display = "none";
-                document.getElementById("uploadSection").style.display =
-                  "block";
-              } else {
-                alert("Sai tài khoản hoặc mật khẩu!");
-              }
+          try {
+            const res = await fetch("http://localhost:3000/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
             });
 
-          // ==== HIỂN THỊ ẢNH XEM TRƯỚC ====
-          document
-            .getElementById("imageInput")
-            .addEventListener("change", (e) => {
-              const files = e.target.files;
-              const container = document.getElementById("previewContainer");
-              container.innerHTML = ""; // Xóa preview cũ
+            const data = await res.json();
+            if (data.success) {
+              authToken = data.data.startsWith("Bearer")
+                ? data.data
+                : "Bearer " + data.data;
 
-              Array.from(files).forEach((file) => {
-                const img = document.createElement("img");
-                img.classList.add("preview");
-                img.src = URL.createObjectURL(file);
-                container.appendChild(img);
-              });
+              alert("Đăng nhập thành công!");
+              document.getElementById("loginForm").style.display = "none";
+              document.getElementById("uploadSection").style.display = "block";
+            } else {
+              alert("Sai tài khoản hoặc mật khẩu!");
+            }
+          } catch (error) {
+            alert("Lỗi kết nối: " + error.message);
+          }
+        });
+
+      // Hiển thị ảnh xem trước
+      document.getElementById("imageInput").addEventListener("change", (e) => {
+        const files = e.target.files;
+        const container = document.getElementById("previewContainer");
+        container.innerHTML = ""; // Xóa preview cũ
+
+        Array.from(files).forEach((file) => {
+          if (file.type.startsWith("image/")) {
+            const img = document.createElement("img");
+            img.classList.add("preview");
+            img.src = URL.createObjectURL(file);
+            container.appendChild(img);
+          }
+        });
+      });
+
+      // Upload nhiều ảnh
+      document
+        .getElementById("uploadBtn")
+        .addEventListener("click", async () => {
+          const fileInput = document.getElementById("imageInput");
+          if (!fileInput.files.length) {
+            alert("Vui lòng chọn ít nhất 1 ảnh!");
+            return;
+          }
+
+          const formData = new FormData();
+          Array.from(fileInput.files).forEach((file) => {
+            formData.append("image", file);
+          });
+
+          try {
+            const res = await fetch("http://localhost:3000/files/uploadMulti", {
+              method: "POST",
+              headers: { Authorization: authToken },
+              body: formData,
             });
 
-          // ==== UPLOAD NHIỀU ẢNH ====
-          document
-            .getElementById("uploadBtn")
-            .addEventListener("click", async () => {
-              const fileInput = document.getElementById("imageInput");
-              if (!fileInput.files.length) {
-                alert("Vui lòng chọn ít nhất 1 ảnh!");
-                return;
-              }
-
-              const formData = new FormData();
-              Array.from(fileInput.files).forEach((file) => {
-                formData.append("image", file); // phải cùng tên field "image"
-              });
-
-              const res = await fetch(
-                "http://localhost:3000/files/uploadMulti",
-                {
-                  method: "POST",
-                  headers: {
-                    Authorization: authToken,
-                  },
-                  body: formData,
-                }
-              );
-
-              const data = await res.json();
-              if (data.success) {
-                document.getElementById("status").innerHTML =
-                  "Upload thành công!<br>" +
-                  data.data
-                    .map(
-                      (url) =>
-                        `<a href="http://localhost:3000${url}" target="_blank">${url}</a>`
-                    )
-                    .join("<br>");
-                alert("Upload thành công!");
-              } else {
-                alert(
-                  "Lỗi upload: " + (data.data?.message || "Không xác định")
-                );
-              }
-            });
-        </script>
-      </body>
-    </html>
+            const data = await res.json();
+            if (data.success) {
+              document.getElementById("status").innerHTML =
+                "Upload thành công!<br>" +
+                data.data
+                  .map(
+                    (url) =>
+                      `<a href="http://localhost:3000${url}" target="_blank">${url}</a>`
+                  )
+                  .join("<br>");
+              alert("Upload thành công!");
+            } else {
+              alert("Lỗi upload: " + (data.data?.message || "Không xác định"));
+            }
+          } catch (error) {
+            alert("Lỗi kết nối: " + error.message);
+          }
+        });
+    </script>
   </body>
 </html>
